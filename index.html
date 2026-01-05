@@ -14,7 +14,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 1. 改回了渐变色背景，不再依赖 bg.jpg */
         body {
             background-color: #020617;
             background-image: 
@@ -33,8 +32,6 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-
-        /* 滚动条美化 */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
@@ -124,7 +121,7 @@
                     
 <div class="bg-teal-500/10 border-l-4 border-teal-500 p-3 rounded-r-lg">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-teal-400 text-xs font-bold">[最新] 2026.01.05</span>
+                            <span class="text-teal-400 text-xs font-bold">[最新] 2026.01.01</span>
                             <span class="bg-teal-500 text-[10px] text-white px-1.5 rounded">TOP</span>
                         </div>
                         <div class="text-sm text-slate-200 leading-relaxed space-y-1">
@@ -163,7 +160,7 @@
                     </div>
 
                     <div class="p-3 border-l-4 border-slate-700 hover:bg-slate-800/30 transition-colors rounded-r-lg">
-                        <div class="text-xs text-slate-500 mb-1">2025.12.31</div>
+                        <div class="text-xs text-slate-500 mb-1">2026.1.5</div>
                         <p class="text-sm text-slate-400">
                             服务器网络架构升级完毕，已部署 Vercel 静态门户与 API 状态监测。
                         </p>
@@ -181,7 +178,6 @@
 
     <script>
         function copyGroup() {
-            // ⚠️ 记得修改这里的群号
             const groupID = "331570910"; 
             navigator.clipboard.writeText(groupID).then(() => {
                 const btn = document.querySelector('button');
@@ -224,4 +220,5 @@
         setInterval(fetchStatus, 30000);
     </script>
 </body>
+
 </html>
