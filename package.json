@@ -1,0 +1,7 @@
+{
+  "name": "akbamboo-site",
+  "version": "1.0.0",
+  "dependencies": {
+    "minecraft-server-util": "^5.3.3"
+  }
+}
