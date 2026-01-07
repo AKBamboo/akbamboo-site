@@ -199,47 +199,74 @@
         }
     }
 
-    // 获取云端公告
     async function fetchNotices() {
         const noticeBoard = document.getElementById('notice-board');
-        
         const API_URL = "https://api.npoint.io/3208f5fd7e60da2fc423";
 
         try {
-            // 加时间戳防止缓存
             const res = await fetch(API_URL + "?t=" + new Date().getTime());
-            const data = await res.json();
+            let data = await res.json();
 
-            // 清空“正在加载...”提示
+            // 1. 找出所有日期中最大的（最新的）那个日期字符串
+            // 假设日期格式为 "YYYY.MM.DD"
+            const allDates = data.map(n => n.date).sort().reverse();
+            const latestDateStr = allDates[0];
+
+            // 2. 对数据进行排序
+            // 规则：置顶(isTop)的排前面；如果置顶状态相同，日期的大的排前面
+            data.sort((a, b) => {
+                if (a.isTop && !b.isTop) return -1; // a置顶，b不置顶 -> a排前
+                if (!a.isTop && b.isTop) return 1;  // a不置顶，b置顶 -> b排前
+                // 如果置顶状态一样，对比日期字符串 (倒序)
+                return b.date.localeCompare(a.date);
+            });
+
+            // 清空列表
             noticeBoard.innerHTML = '';
 
+            // 3. 渲染列表
             data.forEach(notice => {
                 let html = '';
+                let tagHtml = '';
 
-                // 根据是否置顶 (isTop) 生成不同的外框样式
+                // 判断逻辑：
+                // 只有既是置顶，或者是最新日期的，才会有 Tag
                 if (notice.isTop) {
-                    // 置顶样式 (青色高亮背景)
+                    // 如果是置顶，优先级最高，显示“置顶”
+                    tagHtml = `<span class="bg-teal-500 text-[10px] text-white px-1.5 rounded ml-2">置顶</span>`;
+                } else if (notice.date === latestDateStr) {
+                    // 如果不是置顶，但是是最新日期，显示“最新”
+                    tagHtml = `<span class="bg-rose-500 text-[10px] text-white px-1.5 rounded ml-2">最新</span>`;
+                }
+
+                if (notice.isTop) {
+                    // === 置顶样式的 HTML (青色背景) ===
                     html = `
                         <div class="bg-teal-500/10 border-l-4 border-teal-500 p-3 rounded-r-lg animate-fade-in-down">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-teal-400 text-xs font-bold">[最新] ${notice.date}</span>
-                                <span class="bg-teal-500 text-[10px] text-white px-1.5 rounded">${notice.tag || 'TOP'}</span>
+                                <div class="flex items-center">
+                                    <span class="text-teal-400 text-xs font-bold">${notice.date}</span>
+                                    ${tagHtml}
+                                </div>
                             </div>
                             <div class="text-sm text-slate-200 leading-relaxed space-y-1">
                                 ${notice.content}
                             </div>
                         </div>`;
                 } else {
-                    // 普通历史样式 (灰色背景)
+                    // === 普通/最新样式的 HTML (灰色背景) ===
                     html = `
                         <div class="p-3 border-l-4 border-slate-700 hover:bg-slate-800/30 transition-colors rounded-r-lg">
-                            <div class="text-xs text-slate-500 mb-1">${notice.date}</div>
+                            <div class="flex items-center mb-1">
+                                <span class="text-xs text-slate-500">${notice.date}</span>
+                                ${tagHtml}
+                            </div>
                             <div class="text-sm text-slate-400 leading-relaxed">
                                 ${notice.content}
                             </div>
                         </div>`;
                 }
-                
+
                 noticeBoard.innerHTML += html;
             });
 
@@ -248,11 +275,11 @@
             noticeBoard.innerHTML = '<div class="text-center text-red-400 text-sm">公告加载失败，请去群内查看</div>';
         }
     }
-    
+
+    // 初始化执行
     fetchStatus();
     fetchNotices();
-    setInterval(fetchStatus, 30000);
-    fetchStatus();
+    // 轮询状态
     setInterval(fetchStatus, 30000);
 </script>
 </body>
